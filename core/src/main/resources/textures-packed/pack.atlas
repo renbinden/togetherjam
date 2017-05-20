@@ -1,0 +1,95 @@
+
+pack.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+cave
+  rotate: false
+  xy: 0, 96
+  size: 1024, 768
+  orig: 1024, 768
+  offset: 0, 0
+  index: -1
+person1_frame1
+  rotate: false
+  xy: 0, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person1_frame3
+  rotate: false
+  xy: 0, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person1_frame2
+  rotate: false
+  xy: 0, 32
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person1_frame4
+  rotate: false
+  xy: 16, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person2_frame1
+  rotate: false
+  xy: 0, 0
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person2_frame3
+  rotate: false
+  xy: 0, 0
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person2_frame2
+  rotate: false
+  xy: 16, 32
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person2_frame4
+  rotate: false
+  xy: 32, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+
+pack2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+waterfall
+  rotate: false
+  xy: 0, 0
+  size: 1024, 768
+  orig: 1024, 768
+  offset: 0, 0
+  index: -1
+
+pack3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+waterfall_bg
+  rotate: false
+  xy: 0, 0
+  size: 1024, 768
+  orig: 1024, 768
+  offset: 0, 0
+  index: -1
