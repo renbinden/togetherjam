@@ -131,6 +131,13 @@ class MainScreen : ScreenAdapter() {
                 graphicsSystem.tiledMap = tiledMap
                 graphicsSystem.tiledMapRenderer.map = tiledMap
             }
+            "riverside" -> {
+                waterfall.stop()
+                tiledMap = TmxMapLoader().load("maps/riverside.tmx")
+                val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
+                graphicsSystem.tiledMap = tiledMap
+                graphicsSystem.tiledMapRenderer.map = tiledMap
+            }
         }
         tiledMap.layers.get("Object Layer 1").objects.forEach { obj ->
             when (obj.properties["type"]) {
@@ -416,6 +423,18 @@ class MainScreen : ScreenAdapter() {
                     waterfall.add(ParticleEffectComponent(particleEffect))
                     engine.addEntity(waterfall)
                 }
+//                "character1" -> {
+//                    val character1 = Entity()
+//                    character1.add(
+//                            SpriteComponent(
+//                                    Sprite(
+//                                            textureAtlas.findRegion("person2_frame1")
+//                                    )
+//                            )
+//                    )
+//                    val character1BodyDef = BodyDef()
+//
+//                }
             }
         }
     }
