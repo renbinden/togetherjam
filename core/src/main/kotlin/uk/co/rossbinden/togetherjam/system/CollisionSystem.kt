@@ -6,7 +6,8 @@ import com.badlogic.gdx.physics.box2d.World
 class CollisionSystem(val world: World): EntitySystem() {
 
     override fun update(deltaTime: Float) {
-        world.step(deltaTime, 8, 2)
+        if (checkProcessing())
+            world.step(deltaTime, 8, 2)
     }
 
 }

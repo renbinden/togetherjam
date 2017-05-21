@@ -8,13 +8,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
+import uk.co.rossbinden.togetherjam.component.PARTICLE_EFFECT
+import uk.co.rossbinden.togetherjam.component.ParticleEffectComponent
 import uk.co.rossbinden.togetherjam.component.SPRITE
 import uk.co.rossbinden.togetherjam.component.SpriteComponent
 
-class GraphicsSystem(val camera: OrthographicCamera, val tiledMap: TiledMap): EntitySystem() {
+class GraphicsSystem(val camera: OrthographicCamera, var tiledMap: TiledMap): EntitySystem() {
 
     val spriteBatch = SpriteBatch()
     val renderables = Family.all(SpriteComponent::class.java).get()
+    val particleEffects = Family.all(ParticleEffectComponent::class.java).get()
     val tiledMapRenderer = OrthogonalTiledMapRenderer(tiledMap, spriteBatch)
 
     override fun update(deltaTime: Float) {
@@ -27,6 +30,9 @@ class GraphicsSystem(val camera: OrthographicCamera, val tiledMap: TiledMap): En
         spriteBatch.begin()
         engine.getEntitiesFor(renderables).forEach { entity ->
             SPRITE[entity].sprite.draw(spriteBatch)
+        }
+        engine.getEntitiesFor(particleEffects).forEach { entity ->
+            PARTICLE_EFFECT[entity].particleEffect.draw(spriteBatch, deltaTime)
         }
         spriteBatch.end()
     }

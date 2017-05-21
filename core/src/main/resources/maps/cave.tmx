@@ -22,7 +22,11 @@
 </data>
  </layer>
  <objectgroup name="Object Layer 1">
-  <object id="1" type="exit" x="112" y="256" width="32" height="16"/>
+  <object id="1" type="exit" x="112" y="256" width="32" height="16">
+   <properties>
+    <property name="target" value="waterfall"/>
+   </properties>
+  </object>
   <object id="2" type="wall" x="0" y="32" width="256" height="16"/>
   <object id="3" type="wall" x="0" y="240" width="112" height="16"/>
   <object id="4" type="wall" x="144" y="240" width="112" height="16"/>

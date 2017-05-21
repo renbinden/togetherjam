@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="9">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="16" tileheight="16" nextobjectid="13">
  <tileset firstgid="1" name="waterfall" tilewidth="16" tileheight="16" tilecount="64">
   <image source="../textures/waterfalltiles.png" width="128" height="128"/>
  </tileset>
@@ -80,5 +80,8 @@
   <object id="6" x="64" y="528" width="16" height="496"/>
   <object id="7" x="112" y="528" width="16" height="496"/>
   <object id="8" x="80" y="992" width="32" height="32"/>
+  <object id="9" type="player" x="820" y="480" width="16" height="32"/>
+  <object id="11" type="waterfall" x="576" y="160" width="48" height="48"/>
+  <object id="12" type="character1" x="352" y="480" width="16" height="32"/>
  </objectgroup>
 </map>

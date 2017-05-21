@@ -8,16 +8,12 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g2d.*
+import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TmxMapLoader
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.FixtureDef
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.utils.Array
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite
 import uk.co.rossbinden.togetherjam.component.*
 import uk.co.rossbinden.togetherjam.system.*
@@ -31,9 +27,10 @@ class MainScreen : ScreenAdapter() {
     val textureAtlas = TextureAtlas(Gdx.files.internal("textures-packed/pack.atlas"))
     val engine = Engine()
     val camera = OrthographicCamera()
-    val world = World(Vector2(0f, 0f), false)
-    val tiledMap = TmxMapLoader().load("maps/cave.tmx")
+    val world: World
+    lateinit var tiledMap: TiledMap
     val caveAmbience = Gdx.audio.newMusic(Gdx.files.internal("sound/Cave Ambience.wav"))
+    val waterfall = Gdx.audio.newMusic(Gdx.files.internal("sound/Relaxing Waterfall.wav"))
     val inputProcessor = object: InputAdapter() {
         override fun keyDown(keycode: Int): Boolean {
             engine.getEntitiesFor(CONTROLLABLES).forEach { entity ->
@@ -49,14 +46,115 @@ class MainScreen : ScreenAdapter() {
             return true
         }
     }
+    val contactListener = object: ContactListener {
+        override fun endContact(contact: Contact) {
+        }
+
+        override fun beginContact(contact: Contact) {
+            val entity1 = contact.fixtureA.body.userData as? Entity ?: return
+            val entity2 = contact.fixtureB.body.userData as? Entity ?: return
+            if (TARGET_AREA.has(entity1)) {
+                loadingArea = true
+                areaName = TARGET_AREA[entity1].mapName
+            } else if (TARGET_AREA.has(entity2)) {
+                loadingArea = true
+                areaName = TARGET_AREA[entity2].mapName
+            }
+        }
+
+        override fun preSolve(contact: Contact, oldManifold: Manifold) {
+        }
+
+        override fun postSolve(contact: Contact, impulse: ContactImpulse) {
+        }
+
+    }
+    var loadingArea = false
+    var areaName = "cave"
 
     init {
+        Box2D.init()
+        world = World(Vector2(0f, 0f), false)
+        world.setContactListener(contactListener)
         camera.setToOrtho(false)
-        caveAmbience.isLooping = true
-        caveAmbience.play()
+        loadArea("cave")
+        engine.addSystem(MovementSystem())
+        engine.addSystem(GraphicsSystem(camera, tiledMap))
+        engine.addSystem(FootstepSoundsSystem())
+        engine.addSystem(CollisionSystem(world))
+        engine.addSystem(ParticleSystem())
+    }
+
+    override fun show() {
+        Gdx.input.inputProcessor = inputProcessor
+    }
+
+    override fun hide() {
+        Gdx.input.inputProcessor = null
+    }
+
+    override fun render(delta: Float) {
+        if (loadingArea) {
+            loadArea(areaName)
+            loadingArea = false
+        }
+        engine.update(delta)
+    }
+
+    override fun dispose() {
+        engine.getSystem(GraphicsSystem::class.java).dispose()
+        textureAtlas.dispose()
+    }
+
+    fun loadArea(area: String) {
+        val bodies = com.badlogic.gdx.utils.Array<Body>()
+        world.getBodies(bodies)
+        for (body in bodies) {
+            world.destroyBody(body)
+        }
+        engine.removeAllEntities()
+        engine.removeSystem(engine.getSystem(CameraSystem::class.java))
+        when (area) {
+            "cave" -> {
+                waterfall.stop()
+                caveAmbience.isLooping = true
+                caveAmbience.play()
+                tiledMap = TmxMapLoader().load("maps/cave.tmx")
+            }
+            "waterfall" -> {
+                caveAmbience.stop()
+                waterfall.isLooping = true
+                waterfall.volume = 0.3f
+                waterfall.play()
+                tiledMap = TmxMapLoader().load("maps/waterfall.tmx")
+                val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
+                graphicsSystem.tiledMap = tiledMap
+                graphicsSystem.tiledMapRenderer.map = tiledMap
+            }
+        }
         tiledMap.layers.get("Object Layer 1").objects.forEach { obj ->
             when (obj.properties["type"]) {
-                "exit" -> {}
+                "exit" -> {
+                    val exit = Entity()
+                    val exitBodyDef = BodyDef()
+                    exitBodyDef.type = BodyDef.BodyType.StaticBody
+                    exitBodyDef.position.set((obj.properties["x"] as Float / PIXELS_PER_METER) + ((obj.properties["width"] as Float / PIXELS_PER_METER) / 2f), (obj.properties["y"] as Float / PIXELS_PER_METER) + ((obj.properties["height"] as Float / PIXELS_PER_METER) / 2f))
+                    val exitShape = PolygonShape()
+                    exitShape.setAsBox((obj.properties["width"] as Float / PIXELS_PER_METER) / 2f, (obj.properties["height"] as Float / PIXELS_PER_METER) / 2f)
+                    val exitBody = world.createBody(exitBodyDef)
+                    val exitFixtureDef = FixtureDef()
+                    exitFixtureDef.shape = exitShape
+                    exitFixtureDef.density = 1f
+                    exitFixtureDef.friction = 0f
+                    exitFixtureDef.restitution = 0f
+                    exitFixtureDef.isSensor = true
+                    exitBody.createFixture(exitFixtureDef)
+                    exitShape.dispose()
+                    exit.add(BodyComponent(exitBody))
+                    exitBody.userData = exit
+                    exit.add(TargetAreaComponent(obj.properties["target"] as String))
+                    engine.addEntity(exit)
+                }
                 "wall" -> {
                     val wallBodyDef = BodyDef()
                     wallBodyDef.type = BodyDef.BodyType.StaticBody
@@ -78,7 +176,7 @@ class MainScreen : ScreenAdapter() {
                     val playerWalkingSprite = AnimatedSprite(
                             Animation(
                                     0.5f,
-                                    com.badlogic.gdx.utils.Array<TextureRegion>(
+                                    Array<TextureRegion>(
                                             arrayOf(
                                                     textureAtlas.findRegion("person1_frame1"),
                                                     textureAtlas.findRegion("person1_frame2"),
@@ -279,7 +377,7 @@ class MainScreen : ScreenAdapter() {
                     )
                     player.add(
                             FootstepSoundsComponent(
-                                    com.badlogic.gdx.utils.Array<Sound>(
+                                    Array<Sound>(
                                             arrayOf(
                                                     Gdx.audio.newSound(Gdx.files.internal("sound/Triangle Step.wav"))
                                             )
@@ -300,6 +398,7 @@ class MainScreen : ScreenAdapter() {
                     playerBody.createFixture(playerFixtureDef)
                     playerBody.isFixedRotation = true
                     playerShape.dispose()
+                    playerBody.userData = player
                     player.add(
                             BodyComponent(
                                     playerBody
@@ -308,30 +407,17 @@ class MainScreen : ScreenAdapter() {
                     engine.addEntity(player)
                     engine.addSystem(CameraSystem(camera, player))
                 }
+                "waterfall" -> {
+                    val waterfall = Entity()
+                    val particleEffect = ParticleEffect()
+                    particleEffect.load(Gdx.files.internal("particles/waterfall.p"), Gdx.files.internal("particles"))
+                    particleEffect.setPosition(obj.properties["x"] as Float, obj.properties["y"] as Float)
+                    particleEffect.start()
+                    waterfall.add(ParticleEffectComponent(particleEffect))
+                    engine.addEntity(waterfall)
+                }
             }
         }
-        engine.addSystem(MovementSystem())
-        engine.addSystem(GraphicsSystem(camera, tiledMap))
-        engine.addSystem(FootstepSoundsSystem())
-        engine.addSystem(CollisionSystem(world))
-        engine.addSystem(Box2DDebugRenderSystem(world, camera))
-    }
-
-    override fun show() {
-        Gdx.input.inputProcessor = inputProcessor
-    }
-
-    override fun hide() {
-        Gdx.input.inputProcessor = null
-    }
-
-    override fun render(delta: Float) {
-        engine.update(delta)
-    }
-
-    override fun dispose() {
-        engine.getSystem(GraphicsSystem::class.java).dispose()
-        textureAtlas.dispose()
     }
 
 }
