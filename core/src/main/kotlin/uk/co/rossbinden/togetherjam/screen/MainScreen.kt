@@ -22,10 +22,10 @@ import net.dermetfan.gdx.graphics.g2d.AnimatedSprite
 import uk.co.rossbinden.togetherjam.component.*
 import uk.co.rossbinden.togetherjam.system.*
 
-class MainScreen: ScreenAdapter() {
+class MainScreen : ScreenAdapter() {
 
     companion object {
-        var PIXELS_PER_METER = 32f
+        val PIXELS_PER_METER = 32f
     }
 
     val textureAtlas = TextureAtlas(Gdx.files.internal("textures-packed/pack.atlas"))
@@ -54,245 +54,13 @@ class MainScreen: ScreenAdapter() {
         camera.setToOrtho(false)
         caveAmbience.isLooping = true
         caveAmbience.play()
-        val player = Entity()
-        val playerWalkingSprite = AnimatedSprite(
-                Animation(
-                        0.5f,
-                        com.badlogic.gdx.utils.Array<TextureRegion>(
-                                arrayOf(
-                                        textureAtlas.findRegion("person1_frame1"),
-                                        textureAtlas.findRegion("person1_frame2"),
-                                        textureAtlas.findRegion("person1_frame3"),
-                                        textureAtlas.findRegion("person1_frame4")
-                                )
-                        ),
-                        Animation.PlayMode.LOOP
-                )
-        )
-        val playerIdleSprite = Sprite(
-                textureAtlas.findRegion("person1_frame1")
-        )
-        player.add(
-                SpriteComponent(
-                        playerIdleSprite
-                )
-        )
-        player.add(
-                PositionComponent(
-                        0f,
-                        0f
-                )
-        )
-        player.add(
-                VelocityComponent(
-                        0f,
-                        0f
-                )
-        )
-        player.add(
-                ControllableComponent(
-                        keyPressMapping = mapOf(
-                                Pair(Input.Keys.A, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dx > 0.0001f) {
-                                            velocity.dx = 0f
-                                            if (Math.abs(velocity.dy) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dx = -100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.D, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dx < -0.0001f) {
-                                            velocity.dx = 0f
-                                            if (Math.abs(velocity.dy) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else{
-                                            velocity.dx = 100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.W, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dy < -0.0001f) {
-                                            velocity.dy = 0f
-                                            if (Math.abs(velocity.dx) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dy = 100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.S, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dy > 0.0001f) {
-                                            velocity.dy = 0f
-                                            if (Math.abs(velocity.dx) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dy = -100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                })
-                        ),
-                        keyReleaseMapping = mapOf(
-                                Pair(Input.Keys.A, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dx < -0.0001f) {
-                                            velocity.dx = 0f
-                                            if (Math.abs(velocity.dy) < 0.0001f) {
-                                                if (SPRITE.has(entity)){
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dx = 100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.D, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dx > 0.0001f) {
-                                            velocity.dx = 0f
-                                            if (Math.abs(velocity.dy) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else{
-                                            velocity.dx = -100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.W, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dy > 0.0001f) {
-                                            velocity.dy = 0f
-                                            if (Math.abs(velocity.dx) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dy = -100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                }),
-                                Pair(Input.Keys.S, { entity ->
-                                    if (VELOCITY.has(entity)) {
-                                        val velocity = VELOCITY[entity]
-                                        if (velocity.dy < -0.0001f) {
-                                            velocity.dy = 0f
-                                            if (Math.abs(velocity.dx) < 0.0001f) {
-                                                if (SPRITE.has(entity)) {
-                                                    val sprite = SPRITE[entity]
-                                                    sprite.sprite = playerIdleSprite
-                                                }
-                                            }
-                                        } else {
-                                            velocity.dy = 100f
-                                            if (SPRITE.has(entity)) {
-                                                val sprite = SPRITE[entity]
-                                                sprite.sprite = playerWalkingSprite
-                                            }
-                                        }
-                                    }
-                                })
-                        )
-                )
-        )
-        player.add(
-                FootstepSoundsComponent(
-                        com.badlogic.gdx.utils.Array<Sound>(
-                                arrayOf(
-                                        Gdx.audio.newSound(Gdx.files.internal("sound/Triangle Step.wav"))
-                                )
-                        )
-                )
-        )
-        val playerBodyDef = BodyDef()
-        playerBodyDef.type = BodyDef.BodyType.DynamicBody
-        playerBodyDef.position.set(POSITION[player].x / PIXELS_PER_METER, POSITION[player].y / PIXELS_PER_METER)
-        val playerShape = PolygonShape()
-        playerShape.setAsBox((SPRITE[player].sprite.width / PIXELS_PER_METER) / 2f, ((SPRITE[player].sprite.height / 2f) / PIXELS_PER_METER) / 2f)
-        val playerBody = world.createBody(playerBodyDef)
-        val playerFixtureDef = FixtureDef()
-        playerFixtureDef.shape = playerShape
-        playerFixtureDef.density = 1f
-        playerFixtureDef.friction = 0f
-        playerFixtureDef.restitution = 0f
-        playerBody.createFixture(playerFixtureDef)
-        playerBody.isFixedRotation = true
-        playerShape.dispose()
-        player.add(
-                BodyComponent(
-                        playerBody
-                )
-        )
-        engine.addEntity(player)
         tiledMap.layers.get("Object Layer 1").objects.forEach { obj ->
             when (obj.properties["type"]) {
                 "exit" -> {}
                 "wall" -> {
                     val wallBodyDef = BodyDef()
                     wallBodyDef.type = BodyDef.BodyType.StaticBody
-                    wallBodyDef.position.set(obj.properties["x"] as Float / PIXELS_PER_METER + (obj.properties["width"] as Float / PIXELS_PER_METER) / 2f, obj.properties["y"] as Float / PIXELS_PER_METER + (obj.properties["height"] as Float / PIXELS_PER_METER) / 2f)
+                    wallBodyDef.position.set((obj.properties["x"] as Float / PIXELS_PER_METER) + ((obj.properties["width"] as Float / PIXELS_PER_METER) / 2f), (obj.properties["y"] as Float / PIXELS_PER_METER) + ((obj.properties["height"] as Float / PIXELS_PER_METER) / 2f))
                     val wallShape = PolygonShape()
                     wallShape.setAsBox((obj.properties["width"] as Float / PIXELS_PER_METER) / 2f, (obj.properties["height"] as Float / PIXELS_PER_METER) / 2f)
                     val wallBody = world.createBody(wallBodyDef)
@@ -305,10 +73,244 @@ class MainScreen: ScreenAdapter() {
                     wallBody.isFixedRotation = true
                     wallShape.dispose()
                 }
+                "player" -> {
+                    val player = Entity()
+                    val playerWalkingSprite = AnimatedSprite(
+                            Animation(
+                                    0.5f,
+                                    com.badlogic.gdx.utils.Array<TextureRegion>(
+                                            arrayOf(
+                                                    textureAtlas.findRegion("person1_frame1"),
+                                                    textureAtlas.findRegion("person1_frame2"),
+                                                    textureAtlas.findRegion("person1_frame3"),
+                                                    textureAtlas.findRegion("person1_frame4")
+                                            )
+                                    ),
+                                    Animation.PlayMode.LOOP
+                            )
+                    )
+                    val playerIdleSprite = Sprite(
+                            textureAtlas.findRegion("person1_frame1")
+                    )
+                    player.add(
+                            SpriteComponent(
+                                    playerIdleSprite
+                            )
+                    )
+                    player.add(
+                            PositionComponent(
+                                    obj.properties["x"] as Float,
+                                    obj.properties["y"] as Float
+                            )
+                    )
+                    player.add(
+                            VelocityComponent(
+                                    0f,
+                                    0f
+                            )
+                    )
+                    player.add(
+                            ControllableComponent(
+                                    keyPressMapping = mapOf(
+                                            Pair(Input.Keys.A, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dx > 0.0001f) {
+                                                        velocity.dx = 0f
+                                                        if (Math.abs(velocity.dy) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dx = -100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.D, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dx < -0.0001f) {
+                                                        velocity.dx = 0f
+                                                        if (Math.abs(velocity.dy) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else{
+                                                        velocity.dx = 100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.W, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dy < -0.0001f) {
+                                                        velocity.dy = 0f
+                                                        if (Math.abs(velocity.dx) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dy = 100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.S, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dy > 0.0001f) {
+                                                        velocity.dy = 0f
+                                                        if (Math.abs(velocity.dx) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dy = -100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                    ),
+                                    keyReleaseMapping = mapOf(
+                                            Pair(Input.Keys.A, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dx < -0.0001f) {
+                                                        velocity.dx = 0f
+                                                        if (Math.abs(velocity.dy) < 0.0001f) {
+                                                            if (SPRITE.has(entity)){
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dx = 100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.D, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dx > 0.0001f) {
+                                                        velocity.dx = 0f
+                                                        if (Math.abs(velocity.dy) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else{
+                                                        velocity.dx = -100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.W, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dy > 0.0001f) {
+                                                        velocity.dy = 0f
+                                                        if (Math.abs(velocity.dx) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dy = -100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                            Pair(Input.Keys.S, { entity ->
+                                                if (VELOCITY.has(entity)) {
+                                                    val velocity = VELOCITY[entity]
+                                                    if (velocity.dy < -0.0001f) {
+                                                        velocity.dy = 0f
+                                                        if (Math.abs(velocity.dx) < 0.0001f) {
+                                                            if (SPRITE.has(entity)) {
+                                                                val sprite = SPRITE[entity]
+                                                                sprite.sprite = playerIdleSprite
+                                                            }
+                                                        }
+                                                    } else {
+                                                        velocity.dy = 100f
+                                                        if (SPRITE.has(entity)) {
+                                                            val sprite = SPRITE[entity]
+                                                            sprite.sprite = playerWalkingSprite
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                    )
+                            )
+                    )
+                    player.add(
+                            FootstepSoundsComponent(
+                                    com.badlogic.gdx.utils.Array<Sound>(
+                                            arrayOf(
+                                                    Gdx.audio.newSound(Gdx.files.internal("sound/Triangle Step.wav"))
+                                            )
+                                    )
+                            )
+                    )
+                    val playerBodyDef = BodyDef()
+                    playerBodyDef.type = BodyDef.BodyType.DynamicBody
+                    playerBodyDef.position.set(POSITION[player].x / PIXELS_PER_METER, POSITION[player].y / PIXELS_PER_METER)
+                    val playerShape = PolygonShape()
+                    playerShape.setAsBox((SPRITE[player].sprite.width / PIXELS_PER_METER) / 2f, (SPRITE[player].sprite.height / PIXELS_PER_METER) / 2f)
+                    val playerBody = world.createBody(playerBodyDef)
+                    val playerFixtureDef = FixtureDef()
+                    playerFixtureDef.shape = playerShape
+                    playerFixtureDef.density = 1f
+                    playerFixtureDef.friction = 0f
+                    playerFixtureDef.restitution = 0f
+                    playerBody.createFixture(playerFixtureDef)
+                    playerBody.isFixedRotation = true
+                    playerShape.dispose()
+                    player.add(
+                            BodyComponent(
+                                    playerBody
+                            )
+                    )
+                    engine.addEntity(player)
+                    engine.addSystem(CameraSystem(camera, player))
+                }
             }
         }
         engine.addSystem(MovementSystem())
-        engine.addSystem(CameraSystem(camera, player))
         engine.addSystem(GraphicsSystem(camera, tiledMap))
         engine.addSystem(FootstepSoundsSystem())
         engine.addSystem(CollisionSystem(world))

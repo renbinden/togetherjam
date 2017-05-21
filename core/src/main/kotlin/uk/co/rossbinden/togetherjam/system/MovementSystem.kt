@@ -21,8 +21,8 @@ class MovementSystem: IteratingSystem(
         body.body.linearVelocity = Vector2(velocity.dx / PIXELS_PER_METER, velocity.dy / PIXELS_PER_METER)
         if (SPRITE.has(entity)) {
             val sprite = SPRITE[entity]
-            sprite.sprite.x = position.x - sprite.sprite.width / 2
-            sprite.sprite.y = position.y - sprite.sprite.height / 2
+            sprite.sprite.x = position.x - (sprite.sprite.width / 2f)
+            sprite.sprite.y = position.y - (sprite.sprite.height / 2f)
         }
     }
 }
