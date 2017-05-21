@@ -29,8 +29,8 @@ class MainScreen : ScreenAdapter() {
     val camera = OrthographicCamera()
     val world: World
     lateinit var tiledMap: TiledMap
-    val caveAmbience = Gdx.audio.newMusic(Gdx.files.internal("sound/Cave Ambience.wav"))
-    val waterfall = Gdx.audio.newMusic(Gdx.files.internal("sound/Relaxing Waterfall.wav"))
+    val caveAmbience = Gdx.audio.newSound(Gdx.files.internal("sound/Cave Ambience.wav"))
+    val waterfall = Gdx.audio.newSound(Gdx.files.internal("sound/Relaxing Waterfall.wav"))
     val inputProcessor = object: InputAdapter() {
         override fun keyDown(keycode: Int): Boolean {
             engine.getEntitiesFor(CONTROLLABLES).forEach { entity ->
@@ -71,10 +71,14 @@ class MainScreen : ScreenAdapter() {
     }
     var loadingArea = false
     var areaName = "cave"
-    val music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 1.wav"))
-    val music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 2.wav"))
-    val music3 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 3.wav"))
-    val music4 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 4.wav"))
+    val music1 = Gdx.audio.newSound(Gdx.files.internal("sound/Section 1.wav"))
+    val music2 = Gdx.audio.newSound(Gdx.files.internal("sound/Section 2.wav"))
+    val music3 = Gdx.audio.newSound(Gdx.files.internal("sound/Section 3.wav"))
+    val music4 = Gdx.audio.newSound(Gdx.files.internal("sound/Section 4.wav"))
+    var mus1Handle: Long
+    var mus2Handle: Long
+    var mus3Handle: Long
+    var mus4Handle: Long
     var musicIndex = 0
     var stateTime = 0f
 
@@ -84,17 +88,17 @@ class MainScreen : ScreenAdapter() {
         world.setContactListener(contactListener)
         camera.setToOrtho(false)
         loadArea("cave")
-        music1.isLooping = true
-        music1.play()
-        music2.isLooping = true
-        music2.volume = 0f
-        music2.play()
-        music3.isLooping = true
-        music3.volume = 0f
-        music3.play()
-        music4.isLooping = true
-        music4.volume = 0f
-        music4.play()
+        mus1Handle = music1.play()
+        music1.setLooping(mus1Handle, true)
+        mus2Handle = music2.play()
+        music2.setLooping(mus2Handle, true)
+        music2.setVolume(mus2Handle, 0f)
+        mus3Handle = music3.play()
+        music3.setLooping(mus3Handle, true)
+        music3.setVolume(mus3Handle, 0f)
+        mus4Handle = music4.play()
+        music4.setLooping(mus4Handle, true)
+        music4.setVolume(mus4Handle, 0f)
         engine.addSystem(MovementSystem())
         engine.addSystem(GraphicsSystem(camera, tiledMap))
         engine.addSystem(FootstepSoundsSystem())
@@ -120,28 +124,28 @@ class MainScreen : ScreenAdapter() {
             stateTime = 0f
             when (musicIndex) {
                 0 -> {
-                    music1.volume = (music1.volume + 1f) / 2f
-                    music2.volume = music2.volume / 2f
-                    music3.volume = music3.volume / 2f
-                    music4.volume = music4.volume / 2f
+                    music1.setVolume(mus1Handle, 1f)
+                    music2.setVolume(mus2Handle, 0f)
+                    music3.setVolume(mus3Handle, 0f)
+                    music4.setVolume(mus4Handle, 0f)
                 }
                 1 -> {
-                    music2.volume = (music2.volume + 1f) / 2f
-                    music1.volume = music1.volume / 2f
-                    music3.volume = music3.volume / 2f
-                    music4.volume = music4.volume / 2f
+                    music2.setVolume(mus2Handle, 1f)
+                    music1.setVolume(mus1Handle, 0f)
+                    music3.setVolume(mus3Handle, 0f)
+                    music4.setVolume(mus4Handle, 0f)
                 }
                 2 -> {
-                    music3.volume = (music3.volume + 1f) / 2f
-                    music2.volume = music2.volume / 2f
-                    music1.volume = music1.volume / 2f
-                    music4.volume = music4.volume / 2f
+                    music3.setVolume(mus3Handle, 1f)
+                    music2.setVolume(mus2Handle, 0f)
+                    music1.setVolume(mus1Handle, 0f)
+                    music4.setVolume(mus4Handle, 0f)
                 }
                 3 -> {
-                    music4.volume = (music4.volume + 1f) / 2f
-                    music2.volume = music2.volume / 2f
-                    music3.volume = music3.volume / 2f
-                    music1.volume = music1.volume / 2f
+                    music4.setVolume(mus4Handle, 1f)
+                    music2.setVolume(mus2Handle, 0f)
+                    music3.setVolume(mus3Handle, 0f)
+                    music1.setVolume(mus1Handle, 0f)
                 }
             }
         }
@@ -165,16 +169,15 @@ class MainScreen : ScreenAdapter() {
         when (area) {
             "cave" -> {
                 waterfall.stop()
-                caveAmbience.isLooping = true
-                caveAmbience.play()
+                caveAmbience.setLooping(caveAmbience.play(), true)
                 tiledMap = TmxMapLoader().load("maps/cave.tmx")
                 musicIndex = 0
             }
             "waterfall" -> {
                 caveAmbience.stop()
-                waterfall.isLooping = true
-                waterfall.volume = 0.1f
-                waterfall.play()
+                val waHandle = waterfall.play()
+                waterfall.setLooping(waHandle, true)
+                waterfall.setVolume(waHandle, 0.1f)
                 tiledMap = TmxMapLoader().load("maps/waterfall.tmx")
                 val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
                 graphicsSystem.tiledMap = tiledMap
