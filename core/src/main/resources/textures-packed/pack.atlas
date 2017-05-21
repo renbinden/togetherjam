@@ -4,92 +4,122 @@ size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-cave
+cavetiles
   rotate: false
-  xy: 0, 96
-  size: 1024, 768
-  orig: 1024, 768
+  xy: 144, 176
+  size: 96, 80
+  orig: 96, 80
+  offset: 0, 0
+  index: -1
+mountaintiles
+  rotate: false
+  xy: 0, 128
+  size: 144, 128
+  orig: 144, 128
   offset: 0, 0
   index: -1
 person1_frame1
   rotate: false
-  xy: 0, 64
+  xy: 144, 144
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person1_frame3
   rotate: false
-  xy: 0, 64
+  xy: 144, 144
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person1_frame2
   rotate: false
-  xy: 0, 32
+  xy: 240, 224
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person1_frame4
   rotate: false
-  xy: 16, 64
+  xy: 256, 224
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person2_frame1
   rotate: false
-  xy: 0, 0
+  xy: 160, 144
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person2_frame3
   rotate: false
-  xy: 0, 0
+  xy: 160, 144
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person2_frame2
   rotate: false
-  xy: 16, 32
+  xy: 240, 192
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
 person2_frame4
   rotate: false
-  xy: 32, 64
+  xy: 256, 192
   size: 16, 32
   orig: 16, 32
   offset: 0, 0
   index: -1
-
-pack2.png
-size: 1024,1024
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-waterfall
+person3_frame1
+  rotate: false
+  xy: 272, 224
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person3_frame3
+  rotate: false
+  xy: 272, 224
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person3_frame2
+  rotate: false
+  xy: 176, 144
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+person3_frame4
+  rotate: false
+  xy: 272, 192
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+riversidetiles
   rotate: false
   xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+waterfall
+  rotate: false
+  xy: 0, 256
   size: 1024, 768
   orig: 1024, 768
   offset: 0, 0
   index: -1
-
-pack3.png
-size: 1024,1024
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-waterfall_bg
+waterfalltiles
   rotate: false
-  xy: 0, 0
-  size: 1024, 768
-  orig: 1024, 768
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
   offset: 0, 0
   index: -1

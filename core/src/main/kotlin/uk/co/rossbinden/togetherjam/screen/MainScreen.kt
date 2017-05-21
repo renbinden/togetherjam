@@ -71,6 +71,12 @@ class MainScreen : ScreenAdapter() {
     }
     var loadingArea = false
     var areaName = "cave"
+    val music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 1.wav"))
+    val music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 2.wav"))
+    val music3 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 3.wav"))
+    val music4 = Gdx.audio.newMusic(Gdx.files.internal("sound/Section 4.wav"))
+    var musicIndex = 0
+    var stateTime = 0f
 
     init {
         Box2D.init()
@@ -78,6 +84,17 @@ class MainScreen : ScreenAdapter() {
         world.setContactListener(contactListener)
         camera.setToOrtho(false)
         loadArea("cave")
+        music1.isLooping = true
+        music1.play()
+        music2.isLooping = true
+        music2.volume = 0f
+        music2.play()
+        music3.isLooping = true
+        music3.volume = 0f
+        music3.play()
+        music4.isLooping = true
+        music4.volume = 0f
+        music4.play()
         engine.addSystem(MovementSystem())
         engine.addSystem(GraphicsSystem(camera, tiledMap))
         engine.addSystem(FootstepSoundsSystem())
@@ -98,6 +115,37 @@ class MainScreen : ScreenAdapter() {
             loadArea(areaName)
             loadingArea = false
         }
+        stateTime += delta
+        if (stateTime >= 0.5f) {
+            stateTime = 0f
+            when (musicIndex) {
+                0 -> {
+                    music1.volume = (music1.volume + 1f) / 2f
+                    music2.volume = music2.volume / 2f
+                    music3.volume = music3.volume / 2f
+                    music4.volume = music4.volume / 2f
+                }
+                1 -> {
+                    music2.volume = (music2.volume + 1f) / 2f
+                    music1.volume = music1.volume / 2f
+                    music3.volume = music3.volume / 2f
+                    music4.volume = music4.volume / 2f
+                }
+                2 -> {
+                    music3.volume = (music3.volume + 1f) / 2f
+                    music2.volume = music2.volume / 2f
+                    music1.volume = music1.volume / 2f
+                    music4.volume = music4.volume / 2f
+                }
+                3 -> {
+                    music4.volume = (music4.volume + 1f) / 2f
+                    music2.volume = music2.volume / 2f
+                    music3.volume = music3.volume / 2f
+                    music1.volume = music1.volume / 2f
+                }
+            }
+        }
+
         engine.update(delta)
     }
 
@@ -120,16 +168,18 @@ class MainScreen : ScreenAdapter() {
                 caveAmbience.isLooping = true
                 caveAmbience.play()
                 tiledMap = TmxMapLoader().load("maps/cave.tmx")
+                musicIndex = 0
             }
             "waterfall" -> {
                 caveAmbience.stop()
                 waterfall.isLooping = true
-                waterfall.volume = 0.3f
+                waterfall.volume = 0.1f
                 waterfall.play()
                 tiledMap = TmxMapLoader().load("maps/waterfall.tmx")
                 val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
                 graphicsSystem.tiledMap = tiledMap
                 graphicsSystem.tiledMapRenderer.map = tiledMap
+                musicIndex = 1
             }
             "riverside" -> {
                 waterfall.stop()
@@ -137,6 +187,14 @@ class MainScreen : ScreenAdapter() {
                 val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
                 graphicsSystem.tiledMap = tiledMap
                 graphicsSystem.tiledMapRenderer.map = tiledMap
+                musicIndex = 2
+            }
+            "mountain" -> {
+                tiledMap = TmxMapLoader().load("maps/mountain.tmx")
+                val graphicsSystem = engine.getSystem(GraphicsSystem::class.java)
+                graphicsSystem.tiledMap = tiledMap
+                graphicsSystem.tiledMapRenderer.map = tiledMap
+                musicIndex = 3
             }
         }
         tiledMap.layers.get("Object Layer 1").objects.forEach { obj ->
@@ -423,18 +481,94 @@ class MainScreen : ScreenAdapter() {
                     waterfall.add(ParticleEffectComponent(particleEffect))
                     engine.addEntity(waterfall)
                 }
-//                "character1" -> {
-//                    val character1 = Entity()
-//                    character1.add(
-//                            SpriteComponent(
-//                                    Sprite(
-//                                            textureAtlas.findRegion("person2_frame1")
-//                                    )
-//                            )
-//                    )
-//                    val character1BodyDef = BodyDef()
-//
-//                }
+                "character1" -> {
+                    val character1 = Entity()
+                    character1.add(
+                            SpriteComponent(
+                                    AnimatedSprite(
+                                            Animation(
+                                                    0.3f,
+                                                    Array<TextureRegion>(
+                                                            arrayOf(
+                                                    textureAtlas.findRegion("person2_frame1"),
+                                                    textureAtlas.findRegion("person2_frame2"),
+                                                    textureAtlas.findRegion("person2_frame3"),
+                                                    textureAtlas.findRegion("person2_frame4")
+                                                            )
+                                                    ),
+                                                    Animation.PlayMode.LOOP
+                                            )
+                                    )
+                            )
+                    )
+                    character1.add(PositionComponent(obj.properties["x"] as Float, obj.properties["y"] as Float))
+                    character1.add(VelocityComponent(0f, 0f))
+                    val character1BodyDef = BodyDef()
+                    character1BodyDef.type = BodyDef.BodyType.DynamicBody
+                    character1BodyDef.position.set(POSITION[character1].x / PIXELS_PER_METER, POSITION[character1].y / PIXELS_PER_METER)
+                    val character1Shape = PolygonShape()
+                    character1Shape.setAsBox((SPRITE[character1].sprite.width / PIXELS_PER_METER) / 2f, (SPRITE[character1].sprite.height / PIXELS_PER_METER) / 2f)
+                    val character1Body = world.createBody(character1BodyDef)
+                    val character1FixtureDef = FixtureDef()
+                    character1FixtureDef.shape = character1Shape
+                    character1FixtureDef.density = 1f
+                    character1FixtureDef.friction = 0f
+                    character1FixtureDef.restitution = 0f
+                    character1Body.createFixture(character1FixtureDef)
+                    character1Body.isFixedRotation = true
+                    character1Shape.dispose()
+                    character1Body.userData = character1
+                    character1.add(
+                            BodyComponent(
+                                    character1Body
+                            )
+                    )
+                    engine.addEntity(character1)
+                }
+                "character2" -> {
+                    val character2 = Entity()
+                    character2.add(
+                            SpriteComponent(
+                                    AnimatedSprite(
+                                            Animation(
+                                                    0.3f,
+                                                    Array<TextureRegion>(
+                                                            arrayOf(
+                                                    textureAtlas.findRegion("person3_frame1"),
+                                                    textureAtlas.findRegion("person3_frame2"),
+                                                    textureAtlas.findRegion("person3_frame3"),
+                                                    textureAtlas.findRegion("person3_frame4")
+                                                            )
+                                                    ),
+                                                    Animation.PlayMode.LOOP
+                                            )
+                                    )
+                            )
+                    )
+                    character2.add(PositionComponent(obj.properties["x"]as Float, obj.properties["y"] as Float))
+                    character2.add(VelocityComponent(0f, 0f))
+                    val character2BodyDef = BodyDef()
+                    character2BodyDef.type = BodyDef.BodyType.DynamicBody
+                    character2BodyDef.position.set(POSITION[character2].x / PIXELS_PER_METER, POSITION[character2].y / PIXELS_PER_METER)
+                    val character2Shape = PolygonShape()
+                    character2Shape.setAsBox((SPRITE[character2].sprite.width / PIXELS_PER_METER) / 2f, (SPRITE[character2].sprite.height / PIXELS_PER_METER) / 2f)
+                    val character2Body = world.createBody(character2BodyDef)
+                    val character2FixtureDef = FixtureDef()
+                    character2FixtureDef.shape = character2Shape
+                    character2FixtureDef.density = 1f
+                    character2FixtureDef.friction = 0f
+                    character2FixtureDef.restitution = 0f
+                    character2Body.createFixture(character2FixtureDef)
+                    character2Body.isFixedRotation = true
+                    character2Shape.dispose()
+                    character2Body.userData = character2
+                    character2.add(
+                            BodyComponent(
+                                    character2Body
+                            )
+                    )
+                    engine.addEntity(character2)
+                }
             }
         }
     }
